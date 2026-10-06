@@ -2,10 +2,21 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY || "");
-
 const FOUNDER_EMAIL = process.env.FOUNDER_EMAIL || "connect@hawklinesolutions.com";
 const FROM_EMAIL = process.env.FROM_EMAIL || "onboarding@hawklinesolutions.com";
+
+// Lazy-initialize Resend so the build does not fail when API key is missing at build time
+let _resend: Resend | null = null;
+function getResend() {
+  if (!_resend) {
+    const key = process.env.RESEND_API_KEY || "";
+    if (!key) {
+      throw new Error("RESEND_API_KEY is not configured");
+    }
+    _resend = new Resend(key);
+  }
+  return _resend;
+}
 
 interface TrialRequestBody {
   name: string;
@@ -94,9 +105,10 @@ ${message ? `<tr><td style="padding:10px 0;color:#949494;font-family:monospace;v
     let emailSent = false;
     let emailError: string | null = null;
 
-    if (process.env.RESEND_API_KEY && process.env.RESEND_API_KEY !== "your_resend_api_key_here") {
+    if (process.env.RESEND_API_KEY && process.env.RESEND_API_KEY !== "your_resend_api_key_here" && process.env.RESEND_API_KEY !== "onboarding@resend.dev") {
       try {
-        const { error } = await resend.emails.send({
+        const resendInstance = getResend();
+        const { error } = await resendInstance.emails.send({
           from: `Hawkline Solutions <${FROM_EMAIL}>`,
           to: [FOUNDER_EMAIL],
           subject: `🚨 New Trial Request — ${name} (${businessName || "Individual"})`,
