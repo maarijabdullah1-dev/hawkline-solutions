@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+ import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 
 const FOUNDER_EMAIL = process.env.FOUNDER_EMAIL || "connect@hawklinesolutions.com";
@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
 <h1 style="color:#c81b1c;font-size:24px;margin:0;">Hawkline Solutions</h1>
 <p style="color:#949494;font-size:13px;margin:4px 0 0;">New 7-Day Trial Request</p>
 </div>
-<p style="font-size:16px;color:#fff;margin:0 0 24px;">A new trial request has been submitted on your website:</p>
+<p style="font-size:16px;color:#fff;margin:0 0 24px;">A new trial request has been submitted:</p>
 <table style="width:100%;border-collapse:collapse;font-size:14px;">
 <tr><td style="padding:10px 0;border-bottom:1px solid #333;color:#999;width:130px;">NAME</td><td style="padding:10px 0;border-bottom:1px solid #333;color:#fff;font-weight:600;">${escapeHtml(name)}</td></tr>
 <tr><td style="padding:10px 0;border-bottom:1px solid #333;color:#999;">EMAIL</td><td style="padding:10px 0;border-bottom:1px solid #333;color:#fff;">${escapeHtml(email)}</td></tr>
@@ -96,7 +96,7 @@ export async function POST(req: NextRequest) {
         emailError = String(err);
       }
     } else {
-      emailError = "RESEND_API_KEY not configured properly. Email not sent.";
+      emailError = "RESEND_API_KEY not configured properly.";
     }
 
     return NextResponse.json({
